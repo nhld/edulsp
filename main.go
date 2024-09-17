@@ -82,6 +82,19 @@ func handleMessage(logger *log.Logger, writer io.Writer, state analysis.State, m
 		if err != nil {
 			log.Printf("Failed to write response: %v", err)
 		}
+
+	case "textDocument/definition":
+		var request lsp.DefinitionRequest
+		if err := json.Unmarshal(contents, &request); err != nil {
+			logger.Printf("textDocument/definition: %s", err)
+			return
+		}
+		reponse := state.Definition(request.ID, request.Params.TextDocument.URI, request.Params.Position)
+		err := writeResponse(writer, reponse)
+		if err != nil {
+			log.Printf("Failed to write response: %v", err)
+		}
+
 	}
 }
 
